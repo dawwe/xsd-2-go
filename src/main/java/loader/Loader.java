@@ -92,9 +92,4 @@ public class Loader {
 	public Set<String> getEnumClassTable() {
 		return enumClassTable;
 	}
-
-	public void setEnumClassTable(Set<String> enumClassTable) {
-		this.enumClassTable = enumClassTable;
-	}
-
 }
