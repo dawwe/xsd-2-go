@@ -1,14 +1,14 @@
-xsd-2-go
-========
+# xsd-2-go
 
 Given a XSD (XML Schema Definition) file, generating corresponding Golang XML structs. 
 This tool is written in Java.
 
-1. Requirements
+### 1. Requirements
+
 	* Java 1.6 or above.
 	* XJC (Jaxb Binding Compiler) 
 
-2. Build & Usage
+### 2. Build & Usage
 
 See `./Makefile` for example of usage (look into `test` recipe).
 
@@ -40,7 +40,7 @@ type XMLVersion struct {
 }
 ```
 
-3. Fork author's notes
+### 3. Fork author's notes
 
 It seems, tool used to be simpler for Java versions before 1.11.
 Since version 1.11 JAXB packages were removed from JRE, so, I had to add
