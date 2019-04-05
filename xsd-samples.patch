@@ -1,0 +1,181 @@
+diff -ruN ./xsd-samples/LargeAppliances.xsd ./patched/LargeAppliances.xsd
+--- ./xsd-samples/LargeAppliances.xsd	2019-04-05 20:33:02.656835167 +0700
++++ ./patched/LargeAppliances.xsd	2019-04-05 20:33:02.664835278 +0700
+@@ -271,30 +271,6 @@
+ 			<xsd:enumeration value="cubic_feet_per_minute"/>
+ 		</xsd:restriction>
+ 	</xsd:simpleType>
+-	<xsd:complexType name="EnergyConsumptionDimension">
+-		<xsd:simpleContent>
+-			<xsd:extension base="Dimension">
+-				<xsd:attribute name="unitOfMeasure" type="EnergyConsumptionUnitOfMeasure" use="required"/>
+-			</xsd:extension>
+-		</xsd:simpleContent>
+-	</xsd:complexType>
+-	<xsd:simpleType name="EnergyConsumptionUnitOfMeasure">
+-		<xsd:restriction base="String">
+-			<xsd:enumeration value="kilowatt_hours"/>
+-		</xsd:restriction>
+-	</xsd:simpleType>
+-	<xsd:complexType name="NoiseLevelDimension">
+-		<xsd:simpleContent>
+-			<xsd:extension base="Dimension">
+-				<xsd:attribute name="unitOfMeasure" type="NoiseLevelUnitOfMeasure" use="required"/>
+-			</xsd:extension>
+-		</xsd:simpleContent>
+-	</xsd:complexType>
+-	<xsd:simpleType name="NoiseLevelUnitOfMeasure">
+-		<xsd:restriction base="String">
+-			<xsd:enumeration value="decibels"/>
+-		</xsd:restriction>
+-	</xsd:simpleType>
+ 	<xsd:complexType name="MaxEnergyOutputDimension">
+ 		<xsd:simpleContent>
+ 			<xsd:extension base="Dimension">
+@@ -343,9 +319,4 @@
+ 			<xsd:enumeration value="rpm"/>
+ 		</xsd:restriction>
+ 	</xsd:simpleType>
+-	<xsd:simpleType name="SuperLongString">
+-		<xsd:restriction base="xsd:normalizedString">
+-			<xsd:maxLength value="1000"/>
+-		</xsd:restriction>
+-	</xsd:simpleType>
+ </xsd:schema>
+diff -ruN ./xsd-samples/Product.xsd ./patched/Product.xsd
+--- ./xsd-samples/Product.xsd	2019-04-05 20:33:02.656835167 +0700
++++ ./patched/Product.xsd	2019-04-05 20:33:02.664835278 +0700
+@@ -17,7 +17,6 @@
+ 	<xsd:include schemaLocation="ProductClothing.xsd"/>
+ 	<xsd:include schemaLocation="Miscellaneous.xsd"/>
+ 	<xsd:include schemaLocation="CameraPhoto.xsd"/>
+-	<xsd:include schemaLocation="Home.xsd"/>
+ 	<xsd:include schemaLocation="Sports.xsd"/>
+ 	<xsd:include schemaLocation="SportsMemorabilia.xsd"/>
+ 	<xsd:include schemaLocation="EntertainmentCollectibles.xsd"/>
+@@ -29,7 +28,6 @@
+ 	<xsd:include schemaLocation="Health.xsd"/>
+ 	<xsd:include schemaLocation="CE.xsd"/>
+ 	<xsd:include schemaLocation="Computers.xsd"/>
+-	<xsd:include schemaLocation="SWVG.xsd"/>
+ 	<xsd:include schemaLocation="Wireless.xsd"/>
+ 	<xsd:include schemaLocation="Beauty.xsd"/>
+ 	<xsd:include schemaLocation="Office.xsd"/>
+@@ -45,7 +43,6 @@
+ 	<xsd:include schemaLocation="LargeAppliances.xsd"/>
+ 	<xsd:include schemaLocation="FBA.xsd"/>
+ 	<xsd:include schemaLocation="Toys.xsd"/>
+-	<xsd:include schemaLocation="GiftCards.xsd"/>
+ 	<xsd:include schemaLocation="LabSupplies.xsd"/>
+ 	<xsd:include schemaLocation="EducationSupplies.xsd"/>
+ 	<xsd:include schemaLocation="RawMaterials.xsd"/>
+@@ -54,8 +51,6 @@
+ 	<xsd:include schemaLocation="Shoes.xsd"/>
+ 	<xsd:include schemaLocation="Motorcycles.xsd"/>
+ 	<xsd:include schemaLocation="MaterialHandling.xsd"/>
+-	<xsd:include schemaLocation="MechanicalFasteners.xsd"/>
+-	<xsd:include schemaLocation="FoodServiceAndJanSan.xsd"/>
+ 	<xsd:include schemaLocation="WineAndAlcohol.xsd"/>
+ 	<xsd:include schemaLocation="EUCompliance.xsd"/>
+ 	<xsd:include schemaLocation="Books.xsd"/>
+@@ -363,7 +358,6 @@
+ 							<xsd:element ref="Clothing"/>
+ 							<xsd:element ref="Miscellaneous"/>
+ 							<xsd:element ref="CameraPhoto"/>
+-							<xsd:element ref="Home"/>
+ 							<xsd:element ref="Sports"/>
+ 							<xsd:element ref="SportsMemorabilia"/>
+ 							<xsd:element ref="EntertainmentCollectibles"/>
+@@ -375,7 +369,6 @@
+ 							<xsd:element ref="Health"/>
+ 							<xsd:element ref="CE"/>
+ 							<xsd:element ref="Computers"/>
+-							<xsd:element ref="SoftwareVideoGames"/>
+ 							<xsd:element ref="Wireless"/>
+ 							<xsd:element ref="Beauty"/>
+ 							<xsd:element ref="Office"/>
+@@ -391,7 +384,6 @@
+ 							<xsd:element ref="LargeAppliances"/>
+ 							<xsd:element ref="FBA"/>
+ 							<xsd:element ref="Toys"/>
+-							<xsd:element ref="GiftCard"/>
+ 							<xsd:element ref="LabSupplies"/>
+ 							<xsd:element ref="EducationSupplies"/>
+ 							<xsd:element ref="RawMaterials"/>
+@@ -400,8 +392,6 @@
+ 							<xsd:element ref="Shoes"/>
+ 							<xsd:element ref="Motorcycles"/>
+ 							<xsd:element ref="MaterialHandling"/>
+-							<xsd:element ref="MechanicalFasteners"/>
+-							<xsd:element ref="FoodServiceAndJanSan"/>
+ 							<xsd:element ref="WineAndAlcohol"/>
+ 							<xsd:element ref="EUCompliance"/>
+ 							<xsd:element ref="Books"/>
+diff -ruN ./xsd-samples/ToysBaby.xsd ./patched/ToysBaby.xsd
+--- ./xsd-samples/ToysBaby.xsd	2019-04-05 20:33:02.656835167 +0700
++++ ./patched/ToysBaby.xsd	2019-04-05 20:33:02.664835278 +0700
+@@ -195,64 +195,4 @@
+ 			</xsd:sequence>
+ 		</xsd:complexType>
+ 	</xsd:element>
+-	<!--
+-    ##################################################
+-    # Recall Group
+-    ##################################################
+-    -->
+-	<xsd:element name="Recall">
+-		<xsd:complexType>
+-			<xsd:sequence>
+-				<xsd:element name="IsRecalled" type="xsd:boolean"/>
+-				<xsd:element name="RecallDescription">
+-					<xsd:simpleType>
+-						<xsd:restriction base="xsd:normalizedString">
+-							<xsd:maxLength value="1500"/>
+-						</xsd:restriction>
+-					</xsd:simpleType>
+-				</xsd:element>
+-			</xsd:sequence>
+-		</xsd:complexType>
+-	</xsd:element>
+-	<!--
+-    ##################################################
+-    # Age Recommendation Group
+-    ##################################################
+-    -->
+-	<xsd:element name="AgeRecommendation">
+-		<xsd:complexType>
+-			<xsd:sequence>
+-				<xsd:element name="MinimumManufacturerAgeRecommended" type="MinimumAgeRecommendedDimension" minOccurs="0"/>
+-				<xsd:element name="MaximumManufacturerAgeRecommended" type="AgeRecommendedDimension" minOccurs="0"/>
+-				<xsd:element name="MinimumMerchantAgeRecommended" type="MinimumAgeRecommendedDimension" minOccurs="0"/>
+-				<xsd:element name="MaximumMerchantAgeRecommended" type="AgeRecommendedDimension" minOccurs="0"/>
+-			</xsd:sequence>
+-		</xsd:complexType>
+-	</xsd:element>
+-	<!--
+-    ##################################################
+-    # Weight Recommendation Group
+-    ##################################################
+-    -->
+-	<xsd:element name="WeightRecommendation">
+-		<xsd:complexType>
+-			<xsd:sequence>
+-				<xsd:element name="MinimumManufacturerWeightRecommended" type="WeightIntegerDimension" minOccurs="0"/>
+-				<xsd:element name="MaximumManufacturerWeightRecommended" type="WeightIntegerDimension" minOccurs="0"/>
+-			</xsd:sequence>
+-		</xsd:complexType>
+-	</xsd:element>
+-	<!--
+-    ##################################################
+-    # Height Recommendation Group
+-    ##################################################
+-    -->
+-	<xsd:element name="HeightRecommendation">
+-		<xsd:complexType>
+-			<xsd:sequence>
+-				<xsd:element name="MinimumHeightRecommended" type="LengthDimension" minOccurs="0"/>
+-				<xsd:element name="MaximumHeightRecommended" type="LengthDimension" minOccurs="0"/>
+-			</xsd:sequence>
+-		</xsd:complexType>
+-	</xsd:element>
+ </xsd:schema>

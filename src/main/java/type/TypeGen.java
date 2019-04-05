@@ -83,7 +83,7 @@ public class TypeGen {
 		String goType = field.getType().getName();
 		goType = this.typeConvertor.getGoType(goType);
 		if (goType == null) {
-			System.err.println("can not map to Go type : " + goType);
+			System.err.println("can not map to Go type : " + field.getType().getName());
 			System.exit(0);
 		}
 

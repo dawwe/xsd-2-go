@@ -33,6 +33,9 @@ public class TypeConvertor {
 		TYPE_MAP.put("double", "float64");
 		TYPE_MAP.put("boolean", "bool");
 		TYPE_MAP.put("char", "uint16");
+
+		TYPE_MAP.put("javax.xml.datatype.XMLGregorianCalendar", "time.Time");
+		TYPE_MAP.put("java.lang.Object", "string");
 	}
 
 	String packageName;
