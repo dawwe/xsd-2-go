@@ -33,4 +33,6 @@ type XMLVersion struct {
 }
 ```
 
+TODO (Nick): Refactor text above.
 
+Use `mvn -DskipTests clean package` to build jar.
