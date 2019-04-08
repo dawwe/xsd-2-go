@@ -14,159 +14,150 @@ import util.Util;
 
 public class TypeGen {
 
-	String pkg;
-	TypeConvertor typeConvertor;
-	Set<String> enumType;
+    String pkg;
+    TypeConvertor typeConvertor;
+    Set<String> enumType;
 
-	public TypeGen() {
+    public TypeGen() {
 
-	}
+    }
 
-	public void setTypeConv(TypeConvertor tc) {
-		this.typeConvertor = tc;
-	}
+    public void setTypeConv(TypeConvertor tc) {
+        this.typeConvertor = tc;
+    }
 
-	public void setEnumTypes(Set<String> e) {
-		this.enumType = e;
-	}
+    public void setEnumTypes(Set<String> e) {
+        this.enumType = e;
+    }
 
-	public void setPkg(String p) {
-		this.pkg = p;
-	}
+    public void setPkg(String p) {
+        this.pkg = p;
+    }
 
-	boolean isEnumClass(Class cls) {
-		String structName = Util.genGoStructName(cls.getName(), this.pkg);
-		return this.enumType.contains(structName);
-	}
+    boolean isEnumClass(Class cls) {
+        String structName = Util.genGoStructName(cls.getName(), this.pkg);
+        return this.enumType.contains(structName);
+    }
 
-	public String typeOf(Field field) {
-		String type = field.getType().getName();
+    public String typeOf(Field field) {
+        String type = field.getType().getName();
 
-		// Field is primitive type
-		if (this.typeConvertor.isPrimitive(type)) {
-			return this.typeConvertor.getGoType(type);
-		}
+        // Field is primitive type
+        if (this.typeConvertor.isPrimitive(type)) {
+            return this.typeConvertor.getGoType(type);
+        }
 
-		// Field is List
-		if (field.getGenericType() instanceof ParameterizedType) {
-			ParameterizedType param = (ParameterizedType) field.getGenericType();
+        // Field is List
+        if (field.getGenericType() instanceof ParameterizedType) {
+            ParameterizedType param = (ParameterizedType) field.getGenericType();
 
-			if (!field.getType().getName().equals("java.util.List")) {
-				System.err.println("can not map to Go type [field is not java.util.List]: " + field.getType());
-				System.exit(0);
-			}
+            if (!field.getType().getName().equals("java.util.List")) {
+                System.err.println("can not map to Go type [field is not java.util.List]: " + field.getType());
+                System.exit(0);
+            }
 
-			Type p = param.getActualTypeArguments()[0];
-			Class pClass = (Class) p;
+            Type p = param.getActualTypeArguments()[0];
+            Class pClass = (Class) p;
 
-			// Enum Class
-			if (isEnumClass(pClass)) {
-				return "[]string";
-			}
+            String goType = this.typeConvertor.getGoType(pClass.getName());
+            if (goType == null) {
+                System.err.println("can not map to Go type [no type mapping found for items]: " + pClass.getName());
+                System.exit(0);
+            }
 
-			String goType = this.typeConvertor.getGoType(pClass.getName());
-			if (goType == null) {
-				System.err.println("can not map to Go type [no type mapping found for items]: " + pClass.getName());
-				System.exit(0);
-			}
+            // builtin type
+            if (this.typeConvertor.isPrimitive(pClass.getName())) {
+                return "[]" + goType;
+            }
 
-			// builtin type
-			if (this.typeConvertor.isPrimitive(pClass.getName())) {
-				return "[]" + goType;
-			}
+            // struct type
+            return "[]" + "XML" + goType;
+        }
 
-			// struct type
-			return "[]" + "XML" + goType;
-		}
+        // Field is Struct
+        String goType = this.typeConvertor.getGoType(field.getType().getName());
+        if (goType == null) {
+            System.err.println("can not map to Go type [no type mapping found for struct field]: " + goType + ", field name: " + field.getName());
+            System.exit(0);
+        }
 
-		// Field is Struct
-		String goType = field.getType().getName();
-		if (isEnumClass(field.getType())) {
-		    return "string";
-		}
-		goType = this.typeConvertor.getGoType(goType);
-		if (goType == null) {
-			System.err.println("can not map to Go type [no type mapping found for struct field]: " + goType + ", field name: " + field.getName());
-			System.exit(0);
-		}
+        return "*" + "XML" + goType;
+    }
 
-		return "*" + "XML" + goType;
-	}
+    public String typeOf(XmlElement element, JaxbFactory jaxbFactory) {
 
-	public String typeOf(XmlElement element, JaxbFactory jaxbFactory) {
+        String refType = element.type().getName();
+        // builtin type
+        boolean isBuiltin = this.typeConvertor.isPrimitive(refType);
+        if (isBuiltin) {
+            return this.typeConvertor.getGoType(refType);
+        }
 
-		String refType = element.type().getName();
-		// builtin type
-		boolean isBuiltin = this.typeConvertor.isPrimitive(refType);
-		if (isBuiltin) {
-			return this.typeConvertor.getGoType(refType);
-		}
+        // struct type
+        String goType = this.typeConvertor.getGoType(refType);
+        if (goType != null) {
 
-		// struct type
-		String goType = this.typeConvertor.getGoType(refType);
-		if (goType != null) {
-			
-			return "[]" + "XML" + goType;
-		}
+            return "[]" + "XML" + goType;
+        }
 
-		// jaxb type
-		if (refType.equals("javax.xml.bind.JAXBElement")) {
-			String qname = element.name();
-			Class paramClass = jaxbFactory.getJaxbElementType(qname);
-			goType = this.typeConvertor.getGoType(paramClass.getName());
-			if (goType == null) {
-				System.err.println("can not map to Go Type: " + paramClass.getName());
-			}
+        // jaxb type
+        if (refType.equals("javax.xml.bind.JAXBElement")) {
+            String qname = element.name();
+            Class paramClass = jaxbFactory.getJaxbElementType(qname);
+            goType = this.typeConvertor.getGoType(paramClass.getName());
+            if (goType == null) {
+                System.err.println("can not map to Go Type: " + paramClass.getName());
+            }
 
-			if (this.typeConvertor.isPrimitive(paramClass.getName())) {
-				return goType;
-			}
+            if (this.typeConvertor.isPrimitive(paramClass.getName())) {
+                return goType;
+            }
 
-			return "[]" + "XML" + goType;
-		}
+            return "[]" + "XML" + goType;
+        }
 
-		System.err.println("can not map to Go type: " + refType);
-		return null;
-	}
+        System.err.println("can not map to Go type: " + refType);
+        return null;
+    }
 
-	public String typeOf(XmlElementRef ref, JaxbContext ctx, JaxbFactory jaxbFactory) {
-		String refType = ref.type().getName();
+    public String typeOf(XmlElementRef ref, JaxbContext ctx, JaxbFactory jaxbFactory) {
+        String refType = ref.type().getName();
 
-		// builtin type
-		boolean isBuiltin = this.typeConvertor.isPrimitive(refType);
-		if (isBuiltin) {
-			return this.typeConvertor.getGoType(refType);
-		}
+        // builtin type
+        boolean isBuiltin = this.typeConvertor.isPrimitive(refType);
+        if (isBuiltin) {
+            return this.typeConvertor.getGoType(refType);
+        }
 
-		// struct type
-		String goType = this.typeConvertor.getGoType(refType);
-		if (goType != null) {
-			return "[]" + "XML" + goType;
-		}
+        // struct type
+        String goType = this.typeConvertor.getGoType(refType);
+        if (goType != null) {
+            return "[]" + "XML" + goType;
+        }
 
-		// jaxb type
-		if (refType.equals("javax.xml.bind.JAXBElement")) {
-			String qname = ref.name();
-			Class paramClass = jaxbFactory.getJaxbElementType(qname);
-			goType = this.typeConvertor.getGoType(paramClass.getName());
-			if (goType == null) {
-				System.err.println("can not map to Go Type: " + paramClass.getName());
-			}
+        // jaxb type
+        if (refType.equals("javax.xml.bind.JAXBElement")) {
+            String qname = ref.name();
+            Class paramClass = jaxbFactory.getJaxbElementType(qname);
+            goType = this.typeConvertor.getGoType(paramClass.getName());
+            if (goType == null) {
+                System.err.println("can not map to Go Type: " + paramClass.getName());
+            }
 
-			if (this.typeConvertor.isPrimitive(paramClass.getName())) {
-				return goType;
-			}
+            if (this.typeConvertor.isPrimitive(paramClass.getName())) {
+                return goType;
+            }
 
-			// recursive definition
-			if (ctx.isRecursive(goType)) {
-				return "[]" + "XML" + goType;
-			}
+            // recursive definition
+            if (ctx.isRecursive(goType)) {
+                return "[]" + "XML" + goType;
+            }
 
-			return "*" + "XML" + goType;
-		}
+            return "*" + "XML" + goType;
+        }
 
-		System.err.println("can not map to Go Type: " + ref.type());
-		return null;
-	}
+        System.err.println("can not map to Go Type: " + ref.type());
+        return null;
+    }
 
 }
