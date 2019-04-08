@@ -1,3 +1,8 @@
+_NOTE:_ This fork fixes maven build for Java 1.11 (by packaging dependencies into
+single jar), fixes some type mappings, contains cherry-picked commit from
+`kazkansouh` branch (keeping tags order) and contains make script to test tool
+with downloaded Amazon MWS xsd files.
+
 # xsd-2-go
 
 Given a XSD (XML Schema Definition) file, generating corresponding Golang XML structs. 
@@ -24,7 +29,6 @@ portion of them.
 To use it with your own xsd files, you may replace content of `./xsd-samples`
 folder and execute `make test`. Generated Go file goes into `./target/model.go`.
 
-
 This is how generated Go code may look like:
 
 ```go
@@ -42,7 +46,6 @@ type XMLVersion struct {
 
 ### 3. Fork author's notes
 
-It seems, tool used to be simpler for Java versions before 1.11.
 Since version 1.11 JAXB packages were removed from JRE, so, I had to add
 them back via additional maven dependencies and classpath arguments.
 
