@@ -37,5 +37,6 @@ test:
 	@JAR_PATH=$$(find .. -name *-jar-with-dependencies.jar)
 	@javac -cp ".:$${JAR_PATH}" *.java
 	@echo "3. Executing xsd2go..."
-	@java -jar $${JAR_PATH} . model > ../model.go
+	@java -jar $${JAR_PATH} . model > ../model-raw.go
+	@goimports ../model-raw.go > ../model.go
 	@echo "Done."
