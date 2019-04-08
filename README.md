@@ -47,9 +47,7 @@ Since version 1.11 JAXB packages were removed from JRE, so, I had to add
 them back via additional maven dependencies and classpath arguments.
 
 To make it simpler (for me), I just used maven assemble plugin to make single
-jar file, containing all dependencies. But then I had appended generated java
-model classes into it. A bit dirty, but works for me. May be it can be cleaned
-up a bit.
+jar file, containing all dependencies. 
 
 I don't know, how to fix unit tests, so, I just skipped them. Original author
 of the tool hardcoded his local paths there. It'd be better to use model classes,

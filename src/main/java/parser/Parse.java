@@ -77,7 +77,8 @@ public class Parse {
 			// this class is XmlEnum
 			XmlEnum xmlEnum = (XmlEnum) c.getAnnotation(XmlEnum.class);
 			if (xmlEnum != null) {
-				this.loader.getEnumClassTable().add(Util.genGoStructName(cls, this.pkg));
+			    String name = Util.genGoStructName(cls, this.pkg);
+			    this.loader.getEnumClassTable().add(name);
 			}
 		}
 	}
@@ -119,7 +120,50 @@ public class Parse {
 		return true;
 	}
 
-	public String parse(Class cls) throws ClassNotFoundException {
+
+    public void parse_aux(Class cls) throws ClassNotFoundException {
+		Class clsSup = cls.getSuperclass();
+		if (clsSup != null) {
+		    parse_aux(clsSup);
+		}
+
+		// Fields
+		Field[] fields = cls.getDeclaredFields();
+
+		JaxbContext ctx = new JaxbContext();
+		ctx.setScope(cls);
+
+		for (Field f : fields) {
+			Annotation[] annotations = f.getAnnotations();
+
+			// no annotation
+			if (annotations.length == 0) {
+			    parseXmlElement(f);
+			}
+
+			// has annotation
+			else {
+				for (Annotation ann : annotations) {
+					if (ann instanceof XmlAttribute) {
+					    parseXmlAttribute(f);
+					} else if (ann instanceof XmlElement) {
+					    parseXmlElement(f);
+					} else if (ann instanceof XmlElementRefs) {
+					    parseXmlElementRefs(f, ctx);
+					} else if (ann instanceof XmlElements) {
+					    parseXmlElements(f);
+					} else if (ann instanceof XmlValue) {
+					    parseXmlValue(f);
+					} else if (ann instanceof XmlTransient) {
+					}
+				}
+			}
+		}
+
+    }
+
+
+    public String parse(Class cls) throws ClassNotFoundException {
 
 		this.buffer.delete(0, this.buffer.length());
 
@@ -130,69 +174,7 @@ public class Parse {
 		// Struct Name
 		parseStructName(cls);
 
-		// Fields
-		Field[] fields = cls.getDeclaredFields();
-		Set<Field> xmlAttrFields = new HashSet<Field>();
-		Set<Field> xmlElementFields = new HashSet<Field>();
-		Set<Field> xmlElementRefsFields = new HashSet<Field>();
-		Set<Field> xmlElementsFields = new HashSet<Field>();
-		Set<Field> xmlValueFields = new HashSet<Field>();
-
-		for (Field f : fields) {
-			Annotation[] annotations = f.getAnnotations();
-
-			// no annotation
-			if (annotations.length == 0) {
-				xmlElementFields.add(f);
-			}
-
-			// has annotation
-			else {
-				for (Annotation ann : annotations) {
-					if (ann instanceof XmlAttribute) {
-						xmlAttrFields.add(f);
-					} else if (ann instanceof XmlElement) {
-						xmlElementFields.add(f);
-					} else if (ann instanceof XmlElementRefs) {
-						xmlElementRefsFields.add(f);
-					} else if (ann instanceof XmlElements) {
-						xmlElementsFields.add(f);
-					} else if (ann instanceof XmlValue) {
-						xmlValueFields.add(f);
-					} else if (ann instanceof XmlTransient) {
-
-					}
-				}
-			}
-		}
-
-		JaxbContext ctx = new JaxbContext();
-		ctx.setScope(cls);
-
-		// attribute
-		for (Field f : xmlAttrFields) {
-			parseXmlAttribute(f);
-		}
-
-		// xml element
-		for (Field f : xmlElementFields) {
-			parseXmlElement(f);
-		}
-
-		// xml elements
-		for (Field f : xmlElementsFields) {
-			parseXmlElements(f);
-		}
-
-		// xml element refs
-		for (Field f : xmlElementRefsFields) {
-			parseXmlElementRefs(f, ctx);
-		}
-
-		// xml value
-		for (Field f : xmlValueFields) {
-			parseXmlValue(f);
-		}
+		parse_aux(cls);
 
 		return finalizeParse();
 	}
@@ -237,6 +219,15 @@ public class Parse {
 		return structName;
 	}
 
+
+    private String getGoType(String type) {
+	if (this.loader.getEnumClassTable().contains(type)) {
+	    return "string";
+	} else {
+	    return this.typeConvertor.getGoType(type);
+	}
+    }
+
 	/**
 	 * parse XmlAttribute field
 	 * 
@@ -252,7 +243,7 @@ public class Parse {
 
 		// attribute type
 		String type = f.getType().getName();
-		String goType = this.typeConvertor.getGoType(type);
+		String goType = getGoType(type);
 		if (goType == null) {
 			System.err.println("Can not map to Golang type: " + type);
 			System.exit(1);

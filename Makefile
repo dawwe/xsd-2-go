@@ -36,11 +36,6 @@ test:
 	@cd ./model
 	@JAR_PATH=$$(find .. -name *-jar-with-dependencies.jar)
 	@javac -cp ".:$${JAR_PATH}" *.java
-	@cd ..
-	@echo "3. Creating standalone JAR with all dependencies and modell classes in it..."
-	@JAR_PATH=$$(find . -name *-jar-with-dependencies.jar)
-	@cp $$JAR_PATH xsd2go-with-model.jar
-	@jar uf xsd2go-with-model.jar ./model/*.class
-	@echo "4. Executing xsd2go..."
-	@java -jar xsd2go-with-model.jar ./model/ model > ./model.go
+	@echo "3. Executing xsd2go..."
+	@java -jar $${JAR_PATH} . model > ../model.go
 	@echo "Done."
