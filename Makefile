@@ -1,4 +1,4 @@
-PHONY: \
+.PHONY: \
 	all \
 	build \
 	load-xsd-samples \
